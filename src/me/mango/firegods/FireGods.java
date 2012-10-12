@@ -43,101 +43,122 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class FireGods extends JavaPlugin implements Listener {
 	Logger log = Logger.getLogger("Minecraft");
-	public final ArrayList<Player> firePlayers = new ArrayList<Player>();	 
-	
-	public static void download(Logger log, URL url, File file) throws IOException { //borrowed from Logblock source (and then modified); credit to DiddiZ
-		if (!file.getParentFile().exists())
+	public final ArrayList<Player> firePlayers = new ArrayList<Player>();
+
+	public static void download(Logger log, URL url, File file)
+			throws IOException { // borrowed from Logblock source (and then
+									// modified); credit to DiddiZ
+		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdir();
-		if (file.exists())
+		}
+		if (file.exists()) {
 			file.delete();
+		}
 		file.createNewFile();
 		final int size = url.openConnection().getContentLength();
-		log.info("Downloading " + file.getName() + " (" + size / 1024 + "kb) ...");
+		log.info("Downloading " + file.getName() + " (" + (size / 1024)
+				+ "kb) ...");
 		final InputStream in = url.openStream();
-		final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(
+				file));
 		final byte[] buffer = new byte[1024];
 		int len, downloaded = 0, msgs = 0;
 		final long start = System.currentTimeMillis();
 		while ((len = in.read(buffer)) >= 0) {
 			out.write(buffer, 0, len);
 			downloaded += len;
-			if ((int)((System.currentTimeMillis() - start) / 500) > msgs) {
-				log.info((int)(downloaded / (double)size * 100d) + "%");
+			if ((int) ((System.currentTimeMillis() - start) / 500) > msgs) {
+				log.info((int) ((downloaded / (double) size) * 100d) + "%");
 				msgs++;
 			}
 		}
 		in.close();
 		out.close();
 		log.info("Download finished");
-	} 
-	
-    public static Permission permission = null;
-	private Boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permission = permissionProvider.getProvider();
-        }
-        return (permission != null);
-    }
-	
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		String commandName = cmd.getName().toLowerCase();
-	    	if(commandName.equalsIgnoreCase("fire")){
-	    		if((permission.has(sender, "firegods.use")) || ((sender.isOp()) && (sender instanceof Player))){
-		    		if (!firePlayers.contains((Player)sender)){
-		    			firePlayers.add((Player)sender);
-		    			sender.sendMessage(ChatColor.GREEN + "You have enabled Fire God mode!");
-		    			return true;
-		    		}else{
-			    		if (firePlayers.contains((Player)sender)){
-			    			firePlayers.remove((Player)sender);
-			    			sender.sendMessage(ChatColor.DARK_RED + "You have disabled Fire God mode.");
-			    			return true;
-			    		}else{
-		    				sender.sendMessage("Unknown error!");
-		    			}
-		    		}
-	    	    }else{
-	    	    	sender.sendMessage(ChatColor.RED + "You can't use that command!");
-	    	    	return true;
-	    	    }
-	    	}
-	    	return false;
-		}
+	}
 
-	public void onEnable(){ 
+	public static Permission permission = null;
+
+	private Boolean setupPermissions() {
+		RegisteredServiceProvider<Permission> permissionProvider = getServer()
+				.getServicesManager().getRegistration(
+						net.milkbowl.vault.permission.Permission.class);
+		if (permissionProvider != null) {
+			permission = permissionProvider.getProvider();
+		}
+		return (permission != null);
+	}
+
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String commandLabel, String[] args) {
+		String commandName = cmd.getName().toLowerCase();
+		if (commandName.equalsIgnoreCase("fire")) {
+			if ((permission.has(sender, "firegods.use"))
+					|| ((sender.isOp()) && (sender instanceof Player))) {
+				if (!firePlayers.contains((Player) sender)) {
+					firePlayers.add((Player) sender);
+					sender.sendMessage(ChatColor.GREEN
+							+ "You have enabled Fire God mode!");
+					return true;
+				} else {
+					if (firePlayers.contains((Player) sender)) {
+						firePlayers.remove((Player) sender);
+						sender.sendMessage(ChatColor.DARK_RED
+								+ "You have disabled Fire God mode.");
+						return true;
+					} else {
+						sender.sendMessage("Unknown error!");
+					}
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED
+						+ "You can't use that command!");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void onEnable() {
 		PluginManager pm = this.getServer().getPluginManager();
 		getServer().getPluginManager().registerEvents(this, this);
-		if (pm.getPlugin("Vault") == null && !new File("plugins/Vault.jar").exists())
+		if ((pm.getPlugin("Vault") == null)
+				&& !new File("plugins/Vault.jar").exists()) {
 			try {
-				download(log, new URL("http://dev.bukkit.org/media/files/571/472/Vault.jar"), new File("plugins/Vault.jar"));
-				//log.info("[FireGods] Restart/reload your server now!");
+				download(log, new URL(
+						"http://dev.bukkit.org/media/files/571/472/Vault.jar"),
+						new File("plugins/Vault.jar"));
+				// log.info("[FireGods] Restart/reload your server now!");
 				getServer().reload();
 				return;
 			} catch (final Exception ex) {
 				log.warning("[FireGods] Failed to download Vault. Please install it manually.");
 				pm.disablePlugin(this);
+			}
 		}
 		setupPermissions();
-	    PluginDescriptionFile pdfFile = getDescription();
-	    this.log.info(pdfFile.getName() + " v" + pdfFile.getVersion() + " by Mango is enabled.");
-	} 
-	public void onDisable(){ 
-	    PluginDescriptionFile pdfFile = getDescription();
-	    this.log.info(pdfFile.getName() + " v" + pdfFile.getVersion() + " by Mango is disabled.");
+		PluginDescriptionFile pdfFile = getDescription();
+		this.log.info(pdfFile.getName() + " v" + pdfFile.getVersion()
+				+ " by Mango is enabled.");
 	}
+
+	public void onDisable() {
+		PluginDescriptionFile pdfFile = getDescription();
+		this.log.info(pdfFile.getName() + " v" + pdfFile.getVersion()
+				+ " by Mango is disabled.");
+	}
+
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event){
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if(firePlayers.contains((Player)player)){
+		if (firePlayers.contains((Player) player)) {
 			org.bukkit.Location loc = event.getPlayer().getLocation();
 			World w = loc.getWorld();
 			loc.setY(loc.getY() + 0);
 			Block b = w.getBlockAt(loc);
-				if (!b.isLiquid()) {
-					b.setTypeId(51); //fire = 51
-				}
+			if (!b.isLiquid()) {
+				b.setTypeId(51); // fire = 51
+			}
 		}
 	}
 }
-
