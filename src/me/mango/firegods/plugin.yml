@@ -1,0 +1,9 @@
+name: FireGods
+main: me.mango.firegods.FireGods
+version: 1.2.2
+description: OPs can trail fire behind them like gods!
+author: Mango
+commands:
+    fire:
+      description: Toggles Fire God mode
+      usage: /<command>
