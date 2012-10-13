@@ -1,7 +1,7 @@
 name: FireGods
 main: me.mango.firegods.FireGods
-version: b1
-description: OPs can trail fire behind them like gods!
+version: b2
+description: Lets admins trail fire behind them like gods!
 author: Mango
 commands:
     fire:
