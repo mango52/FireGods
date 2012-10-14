@@ -30,10 +30,11 @@ public class FGCommandExecutor implements CommandExecutor {
 						return true;
 					} else {
 						sender.sendMessage("Unknown error!");
+						plugin.getLogger().severe("An unknown error has occured for player '" + sender.getName() + "'!");
 					}
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED + "You can't use that command!");
+				sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
 				return true;
 			}
 		}
